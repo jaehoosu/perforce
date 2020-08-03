@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module id="com.perforce.polarion" version="1.0.0">
+
+	<service-point id="p4ExternalRepositoryProvider"
+		interface="com.polarion.platform.repository.external.IExternalRepositoryProvider">
+		<invoke-factory>
+			<construct
+				class="com.perforce.polarion.repository.provider.P4ExternalRepositoryProvider" />
+		</invoke-factory>
+	</service-point>
+	<contribution
+		configuration-id="com.polarion.platform.repository.externalRepositoryProviders">
+		<provider id="p4" service="p4ExternalRepositoryProvider" />
+	</contribution>
+
+	<service-point id="persistenceListener"
+		interface="com.polarion.platform.persistence.events.IPersistenceListener"
+		visibility="private">
+		<invoke-factory>
+			<construct
+				class="com.perforce.polarion.element.event.P4PersistenceListener">
+				<service>com.polarion.platform.persistence.dataservice.dataService
+				</service>
+			</construct>
+		</invoke-factory>
+	</service-point>
+	<contribution configuration-id="com.polarion.platform.persistence.dataservice.listeners">
+		<listener service="persistenceListener" prototypes="WorkItem" />
+	</contribution>
+
+	<service-point id="jobScannerFactory"
+		interface="com.polarion.platform.jobs.IJobUnitFactory">
+		<invoke-factory>
+			<construct class="com.perforce.polarion.element.cron.JobScannerFactory">
+			</construct>
+		</invoke-factory>
+	</service-point>
+	<contribution configuration-id="com.polarion.platform.jobs.configuration">
+		<jobUnitFactory name="jobscanner.job" factory="jobScannerFactory" />
+	</contribution>
+	
+	<service-point id="jobImportFactory"
+		interface="com.polarion.platform.jobs.IJobUnitFactory">
+		<invoke-factory>
+			<construct class="com.perforce.polarion.element.cron.JobImportFactory">
+			</construct>
+		</invoke-factory>
+	</service-point>
+	<contribution configuration-id="com.polarion.platform.jobs.configuration">
+		<jobUnitFactory name="jobimport.job" factory="jobImportFactory" />
+	</contribution>
+
+	<contribution configuration-id="com.polarion.xray.webui.administrationPageExtenders">
+		<extender name="Configuration" parentNodeName="Perforce"
+			parentNodeIconUrl="/polarion/icons/default/topicIcons/Tools_157-wrench.png"
+			iconUrl="/polarion/icons/default/topicIconsSmall/Tools_158-wrench-2.png"
+			pageUrl="/polarion/perforce/admin/p4admin.jsp?scope=$scope$"
+			projectScope="true" projectGroupScope="true" repositoryScope="true" />
+	</contribution>
+
+</module>
